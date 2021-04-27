@@ -13,7 +13,7 @@ set(hiopOptimization_SRC
 )
 
 if(HIOP_SPARSE)
-    set(hiopOptimization_SRC ${hiopOptimization_SRC} hiopKKTLinSysSparse.cpp)
+    set(hiopOptimization_SRC ${hiopOptimization_SRC} hiopKKTLinSysSparse.cpp hiopKKTLinSysDuo.cpp)
 endif()
 
 add_library(hiopOptimization OBJECT ${hiopOptimization_SRC})

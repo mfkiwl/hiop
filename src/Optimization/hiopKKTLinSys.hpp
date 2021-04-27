@@ -117,7 +117,6 @@ protected:
     Hess_->timesVec(beta, y, alpha, x);
   }
 
-
 #endif
 protected:
   hiopNlpFormulation* nlp_;
@@ -142,8 +141,10 @@ public:
   {if(linSys_) delete linSys_;}
 
   virtual bool update(const hiopIterate* iter,
-                    const hiopVector* grad_f,
-                    const hiopMatrix* Jac_c, const hiopMatrix* Jac_d, hiopMatrix* Hess) = 0;
+                      const hiopVector* grad_f,
+                      const hiopMatrix* Jac_c,
+                      const hiopMatrix* Jac_d,
+                      hiopMatrix* Hess) = 0;
 
   virtual bool computeDirections(const hiopResidual* resid, hiopIterate* direction) = 0;
 
@@ -163,7 +164,6 @@ public:
   hiopLinSolver* linSys_;
 
 };
-
 
 class hiopKKTLinSysCompressed : public hiopKKTLinSysCurvCheck
 {

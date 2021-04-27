@@ -51,6 +51,7 @@
 #include "hiopKKTLinSysDense.hpp"
 #include "hiopKKTLinSysMDS.hpp"
 #include "hiopKKTLinSysSparse.hpp"
+#include "hiopKKTLinSysDuo.hpp"
 
 #include "hiopCppStdUtils.hpp"
 
@@ -1233,12 +1234,15 @@ decideAndCreateLinearSystem(hiopNlpFormulation* nlp)
 #ifdef HIOP_SPARSE
       // this is Sparse linear system
       std::string strKKT = nlp->options->GetString("KKTLinsys");
-      if(strKKT == "full")
+      if(strKKT == "full") {
         return new hiopKKTLinSysSparseFull(nlp);
-      else if(strKKT == "xdycyd")
+      } else if(strKKT == "xdycyd") {
         return new hiopKKTLinSysCompressedSparseXDYcYd(nlp);
-      else //'auto' or 'XYcYd'
+      } else if(strKKT == "duo") {
+        return new hiopKKTLinSysDuo(nlp);
+      } else {//'auto' or 'XYcYd'
         return new hiopKKTLinSysCompressedSparseXYcYd(nlp);
+      }
 #endif
     }
   } else {
