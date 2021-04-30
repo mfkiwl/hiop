@@ -249,12 +249,18 @@ void hiopOptions::registerOptions()
   }
   //linear algebra
   {
-    vector<string> range(4); range[0] = "auto"; range[1]="xycyd"; range[2]="xdycyd"; range[3]="full";
+    vector<string> range(5);
+    range[0] = "auto";
+    range[1]="xycyd";
+    range[2]="xdycyd";
+    range[3]="full";
+    range[4]="duo"; //only supports sparse NLPs with STRUMPACK for GPU and MA57 for CPU
     registerStrOption("KKTLinsys", "auto", range,
 		      "Type of KKT linear system used internally: decided by HiOp 'auto' "
-		      "(default option), the more compact 'XYcYd, the more stable 'XDYcYd', or the "
-                      "full-size non-symmetric 'full'. The last three options are only available with "
-                      "'Hessian=analyticalExact'.");
+		      "(default option), the more compact 'XYcYd, the more stable 'XDYcYd', the "
+                      "full-size non-symmetric 'full', or the a 'duo' of KKT linear systems (one "
+                      "for GPU and one for CPU). The last four options are only available with "
+                      "'Hessian=analyticalExact' and the 'duo' option is experimental.");
   }
   {
     vector<string> range(3); range[0]="stable"; range[1]="speculative"; range[2]="forcequick";
@@ -379,7 +385,7 @@ void hiopOptions::ensureConsistence()
 
   if(GetString("Hessian")=="quasinewton_approx") {
     string strKKT = GetString("KKTLinsys");
-    if(strKKT=="xycyd" || strKKT=="xdycyd" || strKKT=="full") {
+    if(strKKT=="xycyd" || strKKT=="xdycyd" || strKKT=="full"  || strKKT=="duo") {
       if(is_user_defined("Hessian")) {
         log_printf(hovWarning,
                    "The option 'KKTLinsys=%s' is not valid with 'Hessian=quasiNewtonApprox'. "
