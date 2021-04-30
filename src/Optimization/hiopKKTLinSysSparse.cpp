@@ -775,32 +775,44 @@ namespace hiop
     nlp_->runStats.kkt.tmSolveRhsManip.start();
 
     // unpack
-    rhs_->startingAtCopyToStartingAt(0,          dx,  0);
-    rhs_->startingAtCopyToStartingAt(nx,            dyc,  0);
-    rhs_->startingAtCopyToStartingAt(nx+neq,           dyd,  0);
-    rhs_->startingAtCopyToStartingAt(nx+neq+nineq,         dd,  0);
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd,         dvl,  0, nlp_->get_idl() );
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl,         dvu,  0, nlp_->get_idu());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu,         dzl,  0, nlp_->get_ixl());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl,         dzu,  0, nlp_->get_ixu());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu,         dsdl,  0, nlp_->get_idl());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl,         dsdu,  0, nlp_->get_idu());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl+ndu,         dsxl,  0, nlp_->get_ixl());
-    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl+ndu+nxl,         dsxu,  0, nlp_->get_ixu());
+    rhs_->startingAtCopyToStartingAt(0, dx, 0);
+    rhs_->startingAtCopyToStartingAt(nx, dyc, 0);
+    rhs_->startingAtCopyToStartingAt(nx+neq, dyd, 0);
+    rhs_->startingAtCopyToStartingAt(nx+neq+nineq, dd, 0);
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd, dvl, 0, nlp_->get_idl() );
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl, dvu, 0, nlp_->get_idu());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu, dzl, 0, nlp_->get_ixl());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl, dzu, 0, nlp_->get_ixu());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu,
+                                               dsdl,
+                                               0,
+                                               nlp_->get_idl());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl,
+                                               dsdu,
+                                               0,
+                                               nlp_->get_idu());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl+ndu,
+                                               dsxl,
+                                               0,
+                                               nlp_->get_ixl());
+    rhs_->startingAtCopyToStartingAt_w_pattern(nx+neq+nineq+nd+ndl+ndu+nxl+nxu+ndl+ndu+nxl,
+                                               dsxu,
+                                               0,
+                                               nlp_->get_ixu());
 
     {//write to log
-      nlp_->log->write("RHS KKT_SPARSE_FULL dx: ", dx,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dyc:", dyc, hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dyd:", dyd, hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dd: ", dd,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dvl: ", dvl,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dvu: ", dvu,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dzl: ", dzl,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dzu: ", dzu,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dsdl: ", dsdl,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dsdu: ", dsdu,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dsxl: ", dsxl,  hovIteration);
-      nlp_->log->write("RHS KKT_SPARSE_FULL dsxu: ", dsxu,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dx: ", dx,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dyc:", dyc, hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dyd:", dyd, hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dd: ", dd,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dvl: ", dvl,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dvu: ", dvu,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dzl: ", dzl,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dzu: ", dzu,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dsdl: ", dsdl,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dsdu: ", dsdu,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dsxl: ", dsxl,  hovIteration);
+      nlp_->log->write("SOL KKT_SPARSE_FULL dsxu: ", dsxu,  hovIteration);
     }
 
     nlp_->runStats.kkt.tmSolveRhsManip.stop();
