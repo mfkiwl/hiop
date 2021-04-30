@@ -94,7 +94,7 @@ public:
     fact_acceptor_ = p_fact_acceptor;
   }  
   
-  inline void set_safe_mode(bool val)
+  virtual void set_safe_mode(bool val)
   {
     safe_mode_ = val;
   }

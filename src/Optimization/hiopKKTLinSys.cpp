@@ -1352,12 +1352,11 @@ bool hiopKKTLinSysFull::update( const hiopIterate* iter,
 
 
 bool hiopKKTLinSysFull::computeDirections(const hiopResidual* resid,
-						      hiopIterate* dir)
+                                          hiopIterate* dir)
 {
   nlp_->runStats.tmSolverInternal.start();
 
   const hiopResidual &r=*resid;
-
   /***********************************************************************
    * solve the full system
    * (be aware that rx_tilde is reused/modified inside this function)

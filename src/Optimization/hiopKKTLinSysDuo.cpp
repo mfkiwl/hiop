@@ -67,7 +67,7 @@ namespace hiop
 
     //this works for now -- only on CPU!
     solver1_ = new hiopKKTLinSysSparseFull(nlp);
-    solver2_ = new hiopKKTLinSysCompressedSparseXDYcYd(nlp);
+    solver2_ = NULL;//new hiopKKTLinSysCompressedSparseXDYcYd(nlp);
   }
 
   hiopKKTLinSysDuo::~hiopKKTLinSysDuo()
@@ -86,6 +86,11 @@ namespace hiop
     solver1_ok_ = true;
 
     if(!solver1_->update(iter, grad_f, Jac_c, Jac_d, Hess)) {
+
+      nlp_->log->printf(hovWarning,
+                        "hiopKKTLinSysDuo: solver1 update/factorization failed, switched to "
+                        "solver2\n");
+
       solver1_ok_ = false;
       return solver2_->update(iter, grad_f, Jac_c, Jac_d, Hess);
     }
@@ -97,11 +102,29 @@ namespace hiop
   {
     if(!solver1_ok_) {
       //assumed is that, while solver1_->update failed, solver2_->update has succedded (the
-      //calling code is supposed to ensure this)
+      //calling code is supposed to handles failure of solver2_->update)
       return solver2_->computeDirections(resid, direction);
     }
     
     return solver1_->computeDirections(resid, direction);
   }
-  
+
+  void hiopKKTLinSysDuo::set_PD_perturb_calc(hiopPDPerturbation* p)
+  {
+    solver1_->set_PD_perturb_calc(p);
+    //solver2_->set_PD_perturb_calc(p);
+  }
+
+
+  void hiopKKTLinSysDuo::set_fact_acceptor(hiopFactAcceptor* p_fact_acceptor)
+  {
+    solver1_->set_fact_acceptor(p_fact_acceptor);
+    //solver2_->set_fact_acceptor(p_fact_acceptor);
+  }
+
+  void hiopKKTLinSysDuo::set_safe_mode(bool val)
+  {
+    hiopKKTLinSys::set_safe_mode(val);
+    solver1_->set_safe_mode(val);
+  }
 } // end of namespace
