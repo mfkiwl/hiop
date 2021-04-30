@@ -57,19 +57,25 @@ namespace hiop
 hiopIterate::hiopIterate(const hiopNlpFormulation* nlp_)
 {
   nlp = nlp_;
+
+  // Note: we initialize everything to zero to ensure nice printf formatting of the entries in
+  // slack and duals variables corresponding to inactive bounds and cons. These entries would
+  // otherwise remain uninitialized
   x = nlp->alloc_primal_vec();
+  x->setToZero();
+  sxl = x->new_copy();
+  sxu = x->new_copy();
   d = nlp->alloc_dual_ineq_vec();
-  sxl = x->alloc_clone();
-  sxu = x->alloc_clone();
-  sdl = d->alloc_clone();
-  sdu = d->alloc_clone();
+  d->setToZero();
+  sdl = d->new_copy();
+  sdu = d->new_copy();
   //duals
   yc = nlp->alloc_dual_eq_vec();
-  yd = d->alloc_clone();
-  zl = x->alloc_clone();
-  zu = x->alloc_clone();
-  vl = d->alloc_clone();
-  vu = d->alloc_clone();
+  yd = d->new_copy();
+  zl = x->new_copy();
+  zu = x->new_copy();
+  vl = d->new_copy();
+  vu = d->new_copy();
 }
 
 hiopIterate::~hiopIterate()

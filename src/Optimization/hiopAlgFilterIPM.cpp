@@ -76,13 +76,6 @@ hiopAlgFilterIPMBase::hiopAlgFilterIPMBase(hiopNlpFormulation* nlp_)
   it_trial= it_curr->alloc_clone();
   dir     = it_curr->alloc_clone();
 
-  if(nlp->options->GetString("KKTLinsys")=="full")
-  {
-    it_curr->selectPattern();
-    it_trial->selectPattern(); 
-    dir->selectPattern();
-  }
-
   logbar = new hiopLogBarProblem(nlp);
 
   _f_nlp = _f_log = 0;
@@ -1940,9 +1933,6 @@ int hiopAlgFilterIPMBase::apply_second_order_correction(hiopKKTLinSys* kkt,
 
   if(!soc_dir) {
     soc_dir = dir->alloc_clone();
-    if(nlp->options->GetString("KKTLinsys")=="full") {
-      soc_dir->selectPattern();
-    }      
     c_soc = nlp->alloc_dual_eq_vec();
     d_soc = nlp->alloc_dual_ineq_vec();        
   }
