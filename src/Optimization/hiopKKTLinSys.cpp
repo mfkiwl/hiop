@@ -194,51 +194,70 @@ bool hiopKKTLinSysCurvCheck::factorize()
   assert(nlp_);
 
   // factorization + inertia correction if needed
-  const size_t max_refactorizaion = 10;
-  size_t num_refactorizaion = 0;
+  const size_t max_refactorizations = 10;
+  size_t num_refactorizations = 0;
 
   double delta_wx, delta_wd, delta_cc, delta_cd;
   if(!perturb_calc_->compute_initial_deltas(delta_wx, delta_wd, delta_cc, delta_cd)) {
-    nlp_->log->printf(hovWarning, "linsys: IC perturbation on new linsys failed.\n");
+    nlp_->log->printf(hovWarning, "LinSys: IC perturbation on new linsys failed.\n");
     return false;
   }
 
-  while(num_refactorizaion<=max_refactorizaion) {
+  while(num_refactorizations<=max_refactorizations) {
     assert(delta_wx == delta_wd && "something went wrong with IC");
     assert(delta_cc == delta_cd && "something went wrong with IC");
-    nlp_->log->printf(hovScalars, "linsys: delta_w=%12.5e delta_c=%12.5e (ic %d)\n",
-            delta_wx, delta_cc, num_refactorizaion);
+    nlp_->log->printf(hovScalars,
+                      "linsys: delta_w=%12.5e delta_c=%12.5e (ic %d)\n",
+                      delta_wx,
+                      delta_cc,
+                      num_refactorizations);
 
     // the update of the linear system, including IC perturbations
     this->updateMatrix(delta_wx, delta_wd, delta_cc, delta_cd);
 
     nlp_->runStats.linsolv.start_linsolve();
     nlp_->runStats.kkt.tmUpdateInnerFact.start();
+    
+    //turn the ifdef below on to simulate a fake failure of the factorization
+    //
+    //used to test the "duo" KKTLinSys and/or to force writing "full" KKT matrices for
+    //all outer optimization iterations without running the LU solver (instead the
+    //outer iteration will rely on the secondary linear solver, ussually a robust
+    //sparse solver running on the host
 
+#if 1
+    int continue_re_fact = -1;
+#else
     // factorization
     int n_neg_eig = factorizeWithCurvCheck();
 
     nlp_->runStats.kkt.tmUpdateInnerFact.stop();
 
-    int continue_re_fact = fact_acceptor_->requireReFactorization(*nlp_, n_neg_eig, delta_wx, delta_wd, delta_cc, delta_cd);
+    int continue_re_fact = fact_acceptor_->requireReFactorization(*nlp_,
+                                                                  n_neg_eig,
+                                                                  delta_wx,
+                                                                  delta_wd,
+                                                                  delta_cc,
+                                                                  delta_cd);
+#endif
     
-    if(-1==continue_re_fact)
-    {
+    if(-1==continue_re_fact) {
       return false;
-    }else if(0==continue_re_fact)
-    {
-      break;
+    } else {
+      if(0==continue_re_fact) {
+        break;
+      }
     }
 
     // will do an inertia correction
-    num_refactorizaion++;
+    num_refactorizations++;
     nlp_->runStats.kkt.nUpdateICCorr++;
   } // end of IC loop
 
-  if(num_refactorizaion>max_refactorizaion) {
+  if(num_refactorizations>max_refactorizations) {
     nlp_->log->printf(hovError,
-        "Reached max number (%d) of refactorization within an outer iteration.\n",
-              max_refactorizaion);
+                      "Reached max number (%d) of refactorization within an outer iteration.\n",
+                      max_refactorizations);
     return false;
   }
   return true;
