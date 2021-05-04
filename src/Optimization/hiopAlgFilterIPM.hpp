@@ -264,12 +264,9 @@ public:
 
 private:
   virtual void outputIteration(int lsStatus, int lsNum, int use_soc);
+  /// @brief Decides which KKT linear system should be instantiated based on user's options
   virtual hiopKKTLinSys* decideAndCreateLinearSystem(hiopNlpFormulation* nlp);
-  /// @brief get the method to decide if a factorization is acceptable or not
-  virtual hiopFactAcceptor* decideAndCreateFactAcceptor(hiopPDPerturbation* p, hiopNlpFormulation* nlp);
-  
-  hiopPDPerturbation pd_perturb_;
-  hiopFactAcceptor* fact_acceptor_;
+
 private:
   hiopAlgFilterIPMNewton() : hiopAlgFilterIPMBase(NULL) {};
   hiopAlgFilterIPMNewton(const hiopAlgFilterIPMNewton& ) : hiopAlgFilterIPMBase(NULL){};

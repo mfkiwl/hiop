@@ -65,9 +65,9 @@ namespace hiop
     //solvers as arguments (in constructor or using setters); right now, the linear solver
     //is decided and instantiated internally in the KKTLinsys classes
 
-    //this works for now -- only on CPU!
+    //this works for now only on CPU!
     solver1_ = new hiopKKTLinSysSparseFull(nlp);
-    solver2_ = NULL;//new hiopKKTLinSysCompressedSparseXDYcYd(nlp);
+    solver2_ = new hiopKKTLinSysCompressedSparseXDYcYd(nlp);
   }
 
   hiopKKTLinSysDuo::~hiopKKTLinSysDuo()
@@ -76,6 +76,21 @@ namespace hiop
     delete solver1_;
   }
 
+  bool hiopKKTLinSysDuo::initialize()
+  {
+    if(!solver1_->initialize()) {
+      nlp_->log->printf(hovError,
+                        "hiopKKTLinSysDuo: solver1 initialize failed.\n");
+      return false;
+    }
+    if(!solver2_->initialize()) {
+      nlp_->log->printf(hovError,
+                        "hiopKKTLinSysDuo: solver2 initialize failed.\n");
+      return false;
+    }
+    return true;
+  }
+  
   bool hiopKKTLinSysDuo::update(const hiopIterate* iter,
                                 const hiopVector* grad_f,
                                 const hiopMatrix* Jac_c,
@@ -88,8 +103,7 @@ namespace hiop
     if(!solver1_->update(iter, grad_f, Jac_c, Jac_d, Hess)) {
 
       nlp_->log->printf(hovWarning,
-                        "hiopKKTLinSysDuo: solver1 update/factorization failed, switched to "
-                        "solver2\n");
+                        "hiopKKTLinSysDuo: solver1 update failed, switched to solver2\n");
 
       solver1_ok_ = false;
       return solver2_->update(iter, grad_f, Jac_c, Jac_d, Hess);
@@ -109,22 +123,9 @@ namespace hiop
     return solver1_->computeDirections(resid, direction);
   }
 
-  void hiopKKTLinSysDuo::set_PD_perturb_calc(hiopPDPerturbation* p)
-  {
-    solver1_->set_PD_perturb_calc(p);
-    //solver2_->set_PD_perturb_calc(p);
-  }
-
-
-  void hiopKKTLinSysDuo::set_fact_acceptor(hiopFactAcceptor* p_fact_acceptor)
-  {
-    solver1_->set_fact_acceptor(p_fact_acceptor);
-    //solver2_->set_fact_acceptor(p_fact_acceptor);
-  }
-
   void hiopKKTLinSysDuo::set_safe_mode(bool val)
   {
-    hiopKKTLinSys::set_safe_mode(val);
     solver1_->set_safe_mode(val);
+    solver2_->set_safe_mode(val);
   }
 } // end of namespace

@@ -390,7 +390,6 @@ namespace hiop
     if(write_linsys_counter_>=0) {
       csr_writer_.writeMatToFile(Msys, write_linsys_counter_, nx, neq, nineq);
     }
-
     return true;
   }
 
@@ -695,6 +694,9 @@ namespace hiop
       csr_writer_.writeMatToFile(Msys, write_linsys_counter_, nx, neq, nineq);
     }
 
+    //! simulate error
+    return false;
+    
     return true;
   }
 

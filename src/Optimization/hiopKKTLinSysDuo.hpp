@@ -77,14 +77,13 @@ public:
 
   /// solves the linsys to compute search directions
   virtual bool computeDirections(const hiopResidual* resid, hiopIterate* direction);
-
-  /// set the calculator for primal-dual perturbation
-  virtual void set_PD_perturb_calc(hiopPDPerturbation* p);
-
-  /// set the factorization acceptor
-  virtual void set_fact_acceptor(hiopFactAcceptor* p_fact_acceptor);
-
-  /// set the safe mode on or off
+  
+  /**
+   * @brief Initialize internals of the class, such as PD calculator and factorization acceptor.
+   */
+  virtual bool initialize();
+  
+  /* @brief Toggle safe mode on or off */
   virtual void set_safe_mode(bool val);
 protected:
   /**

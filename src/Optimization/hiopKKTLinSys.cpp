@@ -181,8 +181,39 @@ double hiopKKTLinSys::errorKKT(const hiopResidual* resid, const hiopIterate* sol
 
   return derr;
 }
-
 #endif
+
+hiopKKTLinSysCurvCheck::hiopKKTLinSysCurvCheck(hiopNlpFormulation* nlp)
+    : hiopKKTLinSys(nlp),
+      linSys_{nullptr},
+      fact_acceptor_{nullptr}
+{
+}
+
+hiopKKTLinSysCurvCheck::~hiopKKTLinSysCurvCheck()
+{
+  delete fact_acceptor_;
+  delete linSys_;
+}
+
+bool hiopKKTLinSysCurvCheck::initialize()
+{
+  //recreate acceptor and calc (is cheap) in case this is called during a reoptimization
+  delete fact_acceptor_;
+  fact_acceptor_ = nullptr;
+  delete perturb_calc_;
+  perturb_calc_ = new hiopPDPerturbation();
+  
+  std::string strKKT = nlp_->options->GetString("fact_acceptor");
+  if(strKKT == "inertia_correction") {
+    fact_acceptor_ = new hiopFactAcceptorIC(perturb_calc_, nlp_->m_eq() + nlp_->m_ineq());
+  }else{
+    assert(false &&
+    "Inertia-free approach hasn't been implemented yet.");
+    fact_acceptor_ =  new hiopFactAcceptorIC(perturb_calc_, nlp_->m_eq() + nlp_->m_ineq());
+  } 
+  return true;
+}
 
 int hiopKKTLinSysCurvCheck::factorizeWithCurvCheck()
 {
@@ -191,15 +222,14 @@ int hiopKKTLinSysCurvCheck::factorizeWithCurvCheck()
 
 bool hiopKKTLinSysCurvCheck::factorize()
 {
-  assert(nlp_);
-
+  assert(nlp_); assert(perturb_calc_);
   // factorization + inertia correction if needed
   const size_t max_refactorizations = 10;
   size_t num_refactorizations = 0;
 
   double delta_wx, delta_wd, delta_cc, delta_cd;
   if(!perturb_calc_->compute_initial_deltas(delta_wx, delta_wd, delta_cc, delta_cd)) {
-    nlp_->log->printf(hovWarning, "LinSys: IC perturbation on new linsys failed.\n");
+    nlp_->log->printf(hovWarning, "LinSysCurvCheck: IC perturbation on new linsys failed.\n");
     return false;
   }
 
@@ -212,22 +242,16 @@ bool hiopKKTLinSysCurvCheck::factorize()
                       delta_cc,
                       num_refactorizations);
 
+    
     // the update of the linear system, including IC perturbations
-    this->updateMatrix(delta_wx, delta_wd, delta_cc, delta_cd);
+    if(false == this->updateMatrix(delta_wx, delta_wd, delta_cc, delta_cd)) {
+      nlp_->log->printf(hovWarning, "LinSysCurvCheck::factorize failed in updateMatrix\n");
+      return false;
+    }
 
     nlp_->runStats.linsolv.start_linsolve();
     nlp_->runStats.kkt.tmUpdateInnerFact.start();
     
-    //turn the ifdef below on to simulate a fake failure of the factorization
-    //
-    //used to test the "duo" KKTLinSys and/or to force writing "full" KKT matrices for
-    //all outer optimization iterations without running the LU solver (instead the
-    //outer iteration will rely on the secondary linear solver, ussually a robust
-    //sparse solver running on the host
-
-#if 1
-    int continue_re_fact = -1;
-#else
     // factorization
     int n_neg_eig = factorizeWithCurvCheck();
 
@@ -239,8 +263,6 @@ bool hiopKKTLinSysCurvCheck::factorize()
                                                                   delta_wd,
                                                                   delta_cc,
                                                                   delta_cd);
-#endif
-    
     if(-1==continue_re_fact) {
       return false;
     } else {

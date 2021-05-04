@@ -1193,17 +1193,12 @@ void hiopAlgFilterIPMQuasiNewton::outputIteration(int lsStatus, int lsNum, int u
  * FULL NEWTON IPM
  *****************************************************************************************************/
 hiopAlgFilterIPMNewton::hiopAlgFilterIPMNewton(hiopNlpFormulation* nlp_)
-  : hiopAlgFilterIPMBase(nlp_),
-    fact_acceptor_{nullptr}
+  : hiopAlgFilterIPMBase(nlp_)
 {
 }
 
 hiopAlgFilterIPMNewton::~hiopAlgFilterIPMNewton()
 {
-  if(fact_acceptor_){
-    delete fact_acceptor_;
-  }
-  fact_acceptor_ = nullptr;
 }
 
 hiopKKTLinSys* hiopAlgFilterIPMNewton::
@@ -1248,20 +1243,6 @@ decideAndCreateLinearSystem(hiopNlpFormulation* nlp)
   return NULL;
 }
 
-hiopFactAcceptor* hiopAlgFilterIPMNewton::
-decideAndCreateFactAcceptor(hiopPDPerturbation* p, hiopNlpFormulation* nlp)
-{
-  std::string strKKT = nlp->options->GetString("fact_acceptor");
-  if(strKKT == "inertia_correction")
-  {
-    return new hiopFactAcceptorIC(p,nlp->m_eq()+nlp->m_ineq());
-  }else{
-    assert(false &&
-    "Inertia-free approach hasn't been implemented yet.");
-    return new hiopFactAcceptorIC(p,nlp->m_eq()+nlp->m_ineq());
-  } 
-}
-
 hiopSolveStatus hiopAlgFilterIPMNewton::run()
 {
   //hiopNlpFormulation nlp may need an update since user may have changed options and
@@ -1282,10 +1263,6 @@ hiopSolveStatus hiopAlgFilterIPMNewton::run()
 
   nlp->runStats.initialize();
   nlp->runStats.kkt.initialize();
-
-  if(!pd_perturb_.initialize(nlp)) {
-    return SolveInitializationError;
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////
   // run baby run
@@ -1321,19 +1298,12 @@ hiopSolveStatus hiopAlgFilterIPMNewton::run()
   theta_min=1e-4*fmax(1.0,resid->get_theta());
 
   hiopKKTLinSys* kkt = decideAndCreateLinearSystem(nlp);
-  assert(kkt != NULL);
-  kkt->set_PD_perturb_calc(&pd_perturb_);
-
-  if(fact_acceptor_)
-  {
-    delete fact_acceptor_;
-    fact_acceptor_ = nullptr;
+  if(!kkt->initialize()) {
+    nlp->log->printf(hovError, "hiopAlgFilterIPMNewton::run: error in KKT system initialization.\n");
+    return SolveInitializationError;
   }
-  fact_acceptor_ = decideAndCreateFactAcceptor(&pd_perturb_,nlp);
-  kkt->set_fact_acceptor(fact_acceptor_);
-  
-  _alpha_primal = _alpha_dual = 0;
 
+  _alpha_primal = _alpha_dual = 0;
   _err_nlp_optim0=-1.; _err_nlp_feas0=-1.; _err_nlp_complem0=-1;
 
   // --- Algorithm status 'algStatus ----
@@ -1438,7 +1408,7 @@ hiopSolveStatus hiopAlgFilterIPMNewton::run()
     /****************************************************
      * Search direction calculation
      ***************************************************/
-    pd_perturb_.set_mu(_mu);
+    kkt->set_mu(_mu);
 
     //this will cache the primal infeasibility norm for (re)use in the dual updating
     double infeas_nrm_trial;

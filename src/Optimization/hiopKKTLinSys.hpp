@@ -1,6 +1,5 @@
 // Copyright (c) 2017, Lawrence Livermore National Security, LLC.
 // Produced at the Lawrence Livermore National Laboratory (LLNL).
-// Written by Cosmin G. Petra, petra1@llnl.gov.
 // LLNL-CODE-742473. All rights reserved.
 //
 // This file is part of HiOp. For details, see https://github.com/LLNL/hiop. HiOp
@@ -46,6 +45,14 @@
 // Lawrence Livermore National Security, LLC, and shall not be used for advertising or
 // product endorsement purposes.
 
+/**
+ * @file hiopKKTLinsys.hpp
+ *
+ * @author Cosmin G. Petra <petra1@llnl.gov>, LLNL
+ * @author Nai-Yuan Chiang <chiang7@llnl.gov>, LLNL
+ *
+ */
+
 #ifndef HIOP_KKTLINSYSY
 #define HIOP_KKTLINSYSY
 
@@ -65,38 +72,57 @@ class hiopKKTLinSys
 {
 public:
   hiopKKTLinSys(hiopNlpFormulation* nlp)
-    : nlp_(nlp), iter_(NULL), grad_f_(NULL), Jac_c_(NULL), Jac_d_(NULL), Hess_(NULL),
-      perturb_calc_(NULL), safe_mode_(true)
+    : nlp_(nlp),
+      iter_(nullptr),
+      grad_f_(nullptr),
+      Jac_c_(nullptr),
+      Jac_d_(nullptr),
+      Hess_(nullptr),
+      perturb_calc_(nullptr),
+      safe_mode_(true),
+      mu_(0.1)
   {
     perf_report_ = "on"==hiop::tolower(nlp_->options->GetString("time_kkt"));
   }
   virtual ~hiopKKTLinSys()
-  { }
-  /* updates the parts in KKT system that are dependent on the iterate.
+  {
+    delete perturb_calc_;
+  }
+
+  /**
+   * @brief Initialize internals of the class, such as PD calculator and perturbator.
+   */
+  virtual bool initialize() = 0;
+  
+  /**
+   * Updates the parts in KKT system that are dependent on the iterate.
    * It may trigger a refactorization for direct linear systems, or it may not do
-   * anything, for example, LowRank linear system */
+   * anything, for example, LowRank linear system 
+   */
   virtual bool update(const hiopIterate* iter,
 		      const hiopVector* grad_f,
 		      const hiopMatrix* Jac_c, const hiopMatrix* Jac_d, hiopMatrix* Hess) = 0;
 
-  /* forms the residual of the underlying linear system, uses the factorization
+  /**
+   * Forms the residual of the underlying linear system, uses the factorization
    * computed by 'update' to compute the "reduced-space" search directions by solving
    * with the factors, then computes the "full-space" directions */
   virtual bool computeDirections(const hiopResidual* resid, hiopIterate* direction) = 0;
 
-  virtual void set_PD_perturb_calc(hiopPDPerturbation* p)
-  {
-    perturb_calc_ = p;
-  }
-
-  virtual void set_fact_acceptor(hiopFactAcceptor* p_fact_acceptor)
-  {
-    fact_acceptor_ = p_fact_acceptor;
-  }  
-  
+  /* @brief Toggle safe mode on or off */
   virtual void set_safe_mode(bool val)
   {
     safe_mode_ = val;
+  }
+  /* @brief Set the current value of mu in the outer optimization loop */
+  inline void set_mu(const double& mu)
+  {
+    mu_ = mu;
+  }
+
+  virtual void set_PD_perturb_calc(hiopPDPerturbation* p)
+  {
+    perturb_calc_ = p;
   }
 #ifdef HIOP_DEEPCHECKS
   //computes the solve error for the KKT Linear system; used only for correctness checking
@@ -111,12 +137,13 @@ protected:
    *
    * A default implementation is below
    */
-  virtual void HessianTimesVec_noLogBarrierTerm(double beta, hiopVector& y,
-						double alpha, const hiopVector&x)
+  virtual void HessianTimesVec_noLogBarrierTerm(double beta,
+                                                hiopVector& y,
+						double alpha,
+                                                const hiopVector&x)
   {
     Hess_->timesVec(beta, y, alpha, x);
   }
-
 #endif
 protected:
   hiopNlpFormulation* nlp_;
@@ -125,20 +152,16 @@ protected:
   const hiopMatrix *Jac_c_, *Jac_d_;
   hiopMatrix* Hess_;
   hiopPDPerturbation* perturb_calc_;
-  hiopFactAcceptor* fact_acceptor_;  
   bool perf_report_;
   bool safe_mode_;
+  double mu_;
 };
 
 class hiopKKTLinSysCurvCheck : public hiopKKTLinSys
 {
 public:
-  hiopKKTLinSysCurvCheck(hiopNlpFormulation* nlp)
-    : hiopKKTLinSys(nlp), linSys_{nullptr}
-  {}
-
-  virtual ~hiopKKTLinSysCurvCheck()
-  {if(linSys_) delete linSys_;}
+  hiopKKTLinSysCurvCheck(hiopNlpFormulation* nlp);
+  virtual ~hiopKKTLinSysCurvCheck();
 
   virtual bool update(const hiopIterate* iter,
                       const hiopVector* grad_f,
@@ -156,23 +179,35 @@ public:
   virtual int factorizeWithCurvCheck();
 
   /** 
-   * @brief updates the iterate matrix, given regularizations 'delta_wx', 'delta_wd', 'delta_cc' and 'delta_cd'.
+   * @brief updates the iterate matrix, given regularizations 'delta_wx', 'delta_wd', 
+   * 'delta_cc', and 'delta_cd'.
    */
   virtual bool updateMatrix(const double& delta_wx, const double& delta_wd,
                             const double& delta_cc, const double& delta_cd) = 0;
+  /**
+   * @brief Initialize internals of the class, such as PD calculator and perturbator.
+   */
+  virtual bool initialize();
+  
+  virtual void set_fact_acceptor(hiopFactAcceptor* p_fact_acceptor)
+  {
+    fact_acceptor_ = p_fact_acceptor;
+  }  
 
+protected:
   hiopLinSolver* linSys_;
-
+  hiopFactAcceptor* fact_acceptor_;
+  double mu;
 };
 
 class hiopKKTLinSysCompressed : public hiopKKTLinSysCurvCheck
 {
 public:
   hiopKKTLinSysCompressed(hiopNlpFormulation* nlp)
-    : hiopKKTLinSysCurvCheck(nlp), Dx_(NULL), rx_tilde_(NULL)
+    : hiopKKTLinSysCurvCheck(nlp), Dx_(nullptr), rx_tilde_(nullptr)
   {
     Dx_ = nlp->alloc_primal_vec();
-    assert(Dx_ != NULL);
+    assert(Dx_ != nullptr);
     rx_tilde_  = Dx_->alloc_clone();
   }
   virtual ~hiopKKTLinSysCompressed()
@@ -193,7 +228,8 @@ protected:
   hiopVector* rx_tilde_;
 };
 
-/* Provides the functionality for reducing the KKT linear system to the
+/**
+ * Provides the functionality for reducing the KKT linear system to the
  * compressed linear below in dx, dyc, and dyd variables and then to perform
  * the basic ops needed to compute the remaining directions.
  *
@@ -236,7 +272,8 @@ protected:
   hiopVector *ryd_tilde_;
 };
 
-/* Provides the functionality for reducing the KKT linear system to the
+/**
+ * Provides the functionality for reducing the KKT linear system to the
  * compressed linear below in dx, dd, dyc, and dyd variables and then to perform
  * the basic ops needed to compute the remaining directions.
  *
@@ -303,7 +340,7 @@ public:
     const hiopMatrixDense* Jac_c_ = dynamic_cast<const hiopMatrixDense*>(Jac_c);
     const hiopMatrixDense* Jac_d_ = dynamic_cast<const hiopMatrixDense*>(Jac_d);
     hiopHessianLowRank* Hess_ = dynamic_cast<hiopHessianLowRank*>(Hess);
-    if(Jac_c_==NULL || Jac_d_==NULL || Hess_==NULL) {
+    if(Jac_c_==nullptr || Jac_d_==nullptr || Hess_==nullptr) {
       assert(false);
       return false;
     }
@@ -345,7 +382,7 @@ protected:
   void HessianTimesVec_noLogBarrierTerm(double beta, hiopVector& y, double alpha, const hiopVector& x)
   {
     hiopHessianLowRank* HessLowR = dynamic_cast<hiopHessianLowRank*>(Hess_);
-    assert(NULL != HessLowR);
+    assert(nullptr != HessLowR);
     if(HessLowR) HessLowR->timesVec_noLogBarrierTerm(beta, y, alpha, x);
   }
 #endif
