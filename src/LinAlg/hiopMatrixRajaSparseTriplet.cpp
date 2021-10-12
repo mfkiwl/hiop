@@ -1526,9 +1526,9 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_colpattern(const 
   index_type* iRow = iRow_;
   index_type* jCol = jCol_;
   double* values = values_;
+  const double* pattern = selected.local_data_const();
 
 #ifdef HIOP_DEEPCHECKS
-  const double* pattern = selected.local_data_const();
   RAJA::ReduceSum<hiop_raja_reduce, size_type> sum(0);
   RAJA::forall<hiop_raja_exec>(RAJA::RangeSegment(0, n),
     RAJA_LAMBDA(RAJA::Index_type i)
@@ -1541,12 +1541,10 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_colpattern(const 
   assert(nrm == nnz_to_copy);
 #endif
 
-#if 0 // implemenation that requires a RAJA new version released in Nov.2021
+#if 1 // implemenation that requires a RAJA new version released in Nov.2021
   auto& resmgr = umpire::ResourceManager::getInstance();
   umpire::Allocator devalloc = resmgr.getAllocator(mem_space_);
   index_type* row_start_dev = static_cast<index_type*>(devalloc.allocate((n+1)*sizeof(index_type)));
-
-  const double* pattern = selected.local_data_const();
 
   RAJA::forall<hiop_raja_exec>(
     RAJA::RangeSegment(0, n+1),
@@ -1598,8 +1596,8 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_colpattern(const 
     }
   );
 
-//  evalloc.deallocate(row_start_dev);
-  delete vec_row_start;
+  devalloc.deallocate(row_start_dev);
+//  delete vec_row_start;
 }
 
 /**
@@ -1629,9 +1627,9 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_rowpattern(const 
   index_type* iRow = iRow_;
   index_type* jCol = jCol_;
   double* values = values_;
+  const double* pattern = selected.local_data_const();
 
 #ifdef HIOP_DEEPCHECKS
-  const double* pattern = selected.local_data_const();
   RAJA::ReduceSum<hiop_raja_reduce, size_type> sum(0);
   RAJA::forall<hiop_raja_exec>(RAJA::RangeSegment(0, n),
     RAJA_LAMBDA(RAJA::Index_type i)
@@ -1644,12 +1642,10 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_rowpattern(const 
   assert(nrm == nnz_to_copy);
 #endif
 
-#if 0 // implemenation that requires a RAJA new version released in Nov.2021
+#if 1 // implemenation that requires a RAJA new version released in Nov.2021
   auto& resmgr = umpire::ResourceManager::getInstance();
   umpire::Allocator devalloc = resmgr.getAllocator(mem_space_);
   index_type* row_start_dev = static_cast<index_type*>(devalloc.allocate((n+1)*sizeof(index_type)));
-
-  const double *pattern=selected.local_data_const();
 
   RAJA::forall<hiop_raja_exec>(
     RAJA::RangeSegment(0, n+1),
@@ -1701,8 +1697,8 @@ void hiopMatrixRajaSparseTriplet::setSubmatrixToConstantDiag_w_rowpattern(const 
     }
   );
 
-//  evalloc.deallocate(row_start_dev);
-  delete vec_row_start;
+  devalloc.deallocate(row_start_dev);
+//  delete vec_row_start;
 }
 
 /**
@@ -1772,9 +1768,9 @@ void hiopMatrixRajaSparseTriplet::copyDiagMatrixToSubblock_w_pattern(const hiopV
   index_type* iRow = iRow_;
   index_type* jCol = jCol_;
   double* values = values_;
+  const double* pattern_dev = selected.local_data_const();
 
 #ifdef HIOP_DEEPCHECKS
-  const double* pattern_dev = selected.local_data_const();
   RAJA::ReduceSum<hiop_raja_reduce, size_type> sum(0);
   RAJA::forall<hiop_raja_exec>(RAJA::RangeSegment(0, n),
     RAJA_LAMBDA(RAJA::Index_type i)
@@ -1787,12 +1783,10 @@ void hiopMatrixRajaSparseTriplet::copyDiagMatrixToSubblock_w_pattern(const hiopV
   assert(nrm == nnz_to_copy);
 #endif
 
-#if 0 // implemenation that requires a RAJA new version released in Nov.2021
+#if 1 // implemenation that requires a RAJA new version released in Nov.2021
   auto& resmgr = umpire::ResourceManager::getInstance();
   umpire::Allocator devalloc = resmgr.getAllocator(mem_space_);
   index_type* row_start_dev = static_cast<index_type*>(devalloc.allocate((n+1)*sizeof(index_type)));
-
-  const double* pattern = selected.local_data_const();
 
   RAJA::forall<hiop_raja_exec>(
     RAJA::RangeSegment(0, n+1),
@@ -1802,7 +1796,7 @@ void hiopMatrixRajaSparseTriplet::copyDiagMatrixToSubblock_w_pattern(const hiopV
         row_start_dev[i] = 0;
       } else {
         // from i=1..n
-        if(pattern[i-1]!=0.0){
+        if(pattern_dev[i-1]!=0.0){
           row_start_dev[i] = 1;
         } else {
           row_start_dev[i] = 0;        
@@ -1844,8 +1838,8 @@ void hiopMatrixRajaSparseTriplet::copyDiagMatrixToSubblock_w_pattern(const hiopV
     }
   );
 
-//  evalloc.deallocate(row_start_dev);
-  delete vec_row_start;
+  devalloc.deallocate(row_start_dev);
+//  delete vec_row_start;
 }
 
 /**********************************************************************************
