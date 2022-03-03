@@ -1,0 +1,103 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\providecommand \oddpage@label [2]{}
+\citation{petra_hiop}
+\citation{waecther_05_ipopt2}
+\citation{waecther_05_ipopt}
+\citation{waecther_05_ipopt0}
+\citation{ByrdNocedalSchnabel_94_quasiNewtonRepres}
+\citation{petra_hiop}
+\citation{petra_hiop}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Installing/building \texttt  {HiOp}\xspace  }{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Prerequisites}{4}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Building, testing, and installing \texttt  {HiOp}\xspace  }{4}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Support of host-device computations using (generic)CPU-(NVIDIA)GPU hardware}{4}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Building extra features}{5}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Interfacing with \texttt  {HiOp}\xspace  }{5}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}The NLP with \textit  {dense} constraints formulation requiring \textit  {up to first-order} derivative information}{6}{subsection.3.1}\protected@file@percent }
+\newlabel{obj}{{1}{6}{The NLP with \textit {dense} constraints formulation requiring \textit {up to first-order} derivative information}{equation.3.1}{}}
+\newlabel{ineq}{{3}{6}{The NLP with \textit {dense} constraints formulation requiring \textit {up to first-order} derivative information}{equation.3.3}{}}
+\newlabel{bounds}{{4}{6}{The NLP with \textit {dense} constraints formulation requiring \textit {up to first-order} derivative information}{equation.3.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}The C++ interface}{6}{subsubsection.3.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}Specifying the optimization problem}{6}{subsubsection.3.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}Specifying the inter-process/memory distribution of the problem}{8}{subsubsection.3.1.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Depiction of the distribution of the data of the optimization problem \nobreakspace  {}\textup  {\hbox {\mathsurround \z@ \normalfont  (\ignorespaces \ref  {obj}\unskip \@@italiccorr )}}-\textup  {\hbox {\mathsurround \z@ \normalfont  (\ignorespaces \ref  {bounds}\unskip \@@italiccorr )}} across MPI ranks. The vectors and matrices with storage dependent on the number of optimization variables are distributed. Other data, \textit  {i.e.}, scalar function values or vectors of small size (shown in dashed dark grey boxes), are replicated on each rank.}}{8}{figure.1}\protected@file@percent }
+\newlabel{diagr_distrib}{{1}{8}{Depiction of the distribution of the data of the optimization problem ~\eqref {obj}-\eqref {bounds} across MPI ranks. The vectors and matrices with storage dependent on the number of optimization variables are distributed. Other data, \textit {i.e.}, scalar function values or vectors of small size (shown in dashed dark grey boxes), are replicated on each rank}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.4}Calling \texttt  {HiOp}\xspace  for a \texttt  {hiopInterfaceDenseConstraints} formulation}{9}{subsubsection.3.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}General sparse NLPs requiring \textit  {up to second-order} derivative information}{10}{subsection.3.2}\protected@file@percent }
+\newlabel{spobj}{{5}{10}{General sparse NLPs requiring \textit {up to second-order} derivative information}{equation.3.5}{}}
+\newlabel{spineq}{{7}{10}{General sparse NLPs requiring \textit {up to second-order} derivative information}{equation.3.7}{}}
+\newlabel{spbounds}{{8}{10}{General sparse NLPs requiring \textit {up to second-order} derivative information}{equation.3.8}{}}
+\newlabel{spineq_s}{{10}{10}{General sparse NLPs requiring \textit {up to second-order} derivative information}{equation.3.10}{}}
+\newlabel{spHess}{{11}{10}{General sparse NLPs requiring \textit {up to second-order} derivative information}{equation.3.11}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}C++ interface to solve sparse NLPs}{10}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Specifying the optimization problem}{11}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}Calling \texttt  {HiOp}\xspace  for a \texttt  {hiopInterfaceSparse} formulation}{13}{subsubsection.3.2.3}\protected@file@percent }
+\citation{petra2019memory}
+\citation{waecther_05_ipopt}
+\citation{waecther_05_ipopt2}
+\citation{waecther_05_ipopt0}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}NLPs in the mixed dense-sparse (MDS) form}{14}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:mds}{{3.3}{14}{NLPs in the mixed dense-sparse (MDS) form}{subsection.3.3}{}}
+\newlabel{mdsobj}{{12}{14}{NLPs in the mixed dense-sparse (MDS) form}{equation.3.12}{}}
+\newlabel{mdsineq}{{14}{14}{NLPs in the mixed dense-sparse (MDS) form}{equation.3.14}{}}
+\newlabel{mdsbounds}{{15}{14}{NLPs in the mixed dense-sparse (MDS) form}{equation.3.15}{}}
+\newlabel{mdsJac}{{17}{15}{NLPs in the mixed dense-sparse (MDS) form}{equation.3.17}{}}
+\newlabel{mdsHess}{{18}{15}{NLPs in the mixed dense-sparse (MDS) form}{equation.3.18}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}The C++ interface}{15}{subsubsection.3.3.1}\protected@file@percent }
+\newlabel{sec:mds:cpp}{{3.3.1}{15}{The C++ interface}{subsubsection.3.3.1}{}}
+\citation{pridec_impl}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Calling \texttt  {HiOp}\xspace  for a \texttt  {hiopInterfaceMDS} formulation}{19}{subsubsection.3.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Structured NLPs suitable to primal decomposition (PriDe) schemes}{19}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:pride}{{3.4}{19}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{subsection.3.4}{}}
+\newlabel{prideobj}{{19}{19}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.19}{}}
+\newlabel{prideineq}{{21}{19}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.21}{}}
+\newlabel{pridebounds}{{22}{19}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.22}{}}
+\newlabel{pridemobj}{{23}{20}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.23}{}}
+\newlabel{pridemineq}{{25}{20}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.25}{}}
+\newlabel{pridembounds}{{26}{20}{Structured NLPs suitable to primal decomposition (PriDe) schemes}{equation.3.26}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Specifying a starting point for the optimization process}{20}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Compiling and linking your project with the \texttt  {HiOp}\xspace  library}{21}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Solver options}{22}{section.4}\protected@file@percent }
+\citation{waecther_05_ipopt0}
+\citation{waecther_05_ipopt0}
+\citation{waecther_05_ipopt0}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Options for NLP solvers}{23}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Termination criteria and output}{23}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Algorithm selection and parameters}{23}{subsubsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Linear algebra computational kernels}{24}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}Problem preprocessing}{25}{subsubsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Miscellaneous options}{26}{subsubsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Options for PriDec solver}{26}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Termination criteria and output}{26}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Algorithm selection and parameters}{27}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Miscellaneous options}{27}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Licensing and copyright}{27}{section.5}\protected@file@percent }
+\bibstyle{abbrv}
+\bibdata{petra,hiop}
+\bibcite{ByrdNocedalSchnabel_94_quasiNewtonRepres}{1}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Acknowledgments}{28}{section.6}\protected@file@percent }
+\bibcite{petra_hiop}{2}
+\bibcite{petra2019memory}{3}
+\bibcite{waecther_05_ipopt2}{4}
+\bibcite{waecther_05_ipopt}{5}
+\bibcite{waecther_05_ipopt0}{6}
+\bibcite{pridec_impl}{7}
+\gdef \@abspage@last{30}
