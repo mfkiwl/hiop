@@ -1,9 +1,0 @@
-
-add_executable(nlpDenseCons_EX1.exe nlpDenseCons_EX1.cpp nlpDenseCons_EX1_driver.cpp)
-target_link_libraries(nlpDenseCons_EX1.exe HiOp::HiOp)
-
-add_executable(nlpDenseCons_EX2.exe nlpDenseCons_EX2.cpp nlpDenseCons_EX2_driver.cpp)
-target_link_libraries(nlpDenseCons_EX2.exe HiOp::HiOp)
-
-add_executable(nlpDenseCons_EX3.exe nlpDenseCons_EX3_driver.cpp)
-target_link_libraries(nlpDenseCons_EX3.exe HiOp::HiOp)
