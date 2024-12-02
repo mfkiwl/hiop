@@ -1,5 +1,5 @@
 #ifndef HIOP_EXAMPLE_SPARSE_EX1
-#define  HIOP_EXAMPLE_SPARSE_EX1
+#define HIOP_EXAMPLE_SPARSE_EX1
 
 #include "hiopInterface.hpp"
 
@@ -27,9 +27,9 @@ public:
   virtual ~SparseEx1();
 
   virtual bool get_prob_sizes(size_type& n, size_type& m);
-  virtual bool get_vars_info(const size_type& n, double *xlow, double* xupp, NonlinearityType* type);
+  virtual bool get_vars_info(const size_type& n, double* xlow, double* xupp, NonlinearityType* type);
   virtual bool get_cons_info(const size_type& m, double* clow, double* cupp, NonlinearityType* type);
-  
+
   virtual bool get_sparse_blocks_info(size_type& nx,
                                       size_type& nnz_sparse_Jaceq,
                                       size_type& nnz_sparse_Jacineq,
@@ -43,18 +43,11 @@ public:
                          const double* x,
                          bool new_x,
                          double* cons);
-  virtual bool eval_cons(const size_type& n,
-                         const size_type& m,
-                         const double* x,
-                         bool new_x,
-                         double* cons);
-  virtual bool eval_grad_f(const size_type& n,
-                           const double* x,
-                           bool new_x,
-                           double* gradf);
+  virtual bool eval_cons(const size_type& n, const size_type& m, const double* x, bool new_x, double* cons);
+  virtual bool eval_grad_f(const size_type& n, const double* x, bool new_x, double* gradf);
   virtual bool eval_Jac_cons(const size_type& n,
                              const size_type& m,
-                             const size_type& num_cons, 
+                             const size_type& num_cons,
                              const index_type* idx_cons,
                              const double* x,
                              bool new_x,
@@ -70,7 +63,7 @@ public:
                              index_type* iJacS,
                              index_type* jJacS,
                              double* MJacS);
-  virtual bool get_starting_point(const size_type&n, double* x0);
+  virtual bool get_starting_point(const size_type& n, double* x0);
   virtual bool eval_Hess_Lagr(const size_type& n,
                               const size_type& m,
                               const double* x,
@@ -84,27 +77,17 @@ public:
                               double* MHSS);
 
   // not implemented
-  virtual bool get_starting_point(const size_type&,
-                                  const size_type&,
-                                  double*,
-                                  bool&,
-                                  double*, 
-                                  double*,
-                                  double*,
-                                  bool&,
-                                  double*)
-  { return false; }
+  virtual bool
+  get_starting_point(const size_type&, const size_type&, double*, bool&, double*, double*, double*, bool&, double*)
+  {
+    return false;
+  }
 
-  virtual bool get_warmstart_point(const size_type&,
-                                   const size_type&,
-                                   double*,
-                                   double*, 
-                                   double*,
-                                   double*,
-                                   double*,
-                                   double*,
-                                   double*)
-  { return false; }
+  virtual bool
+  get_warmstart_point(const size_type&, const size_type&, double*, double*, double*, double*, double*, double*, double*)
+  {
+    return false;
+  }
 
 private:
   size_type n_vars, n_cons;
